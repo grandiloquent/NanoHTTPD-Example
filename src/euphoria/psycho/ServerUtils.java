@@ -57,6 +57,12 @@ class ServerUtils {
     public static final String HTTP_CONNECTION = "Connection";
     public static final String HTTP_CONTENT_LENGTH = "Content-Length";
     public static final String HTTP_CONTENT_LOCATION = "Content-Location";
+    /*
+    https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Range
+    Content-Range: <unit> <range-start>-<range-end>/<size>
+Content-Range: <unit> <range-start>-<range-end>/*
+Content-Range: <unit> *\/<size>
+     */
     public static final String HTTP_CONTENT_RANGE = "Content-Range";
     public static final String HTTP_CONTENT_TYPE = "Content-Type";
     public static final String HTTP_ETAG = "ETag";
@@ -64,7 +70,25 @@ class ServerUtils {
     public static final String HTTP_LAST_MODIFIED = "Last-Modified";
     public static final String HTTP_SERVER = "Server";
     public static final String HTTP_X_POWERED_BY = "X-Powered-By";
+    /*
+    The Range HTTP request header indicates the part of a document that the server should
+return. Several parts can be requested with one Range header at once, and the server
+may send back these ranges in a multipart document. If the server sends back ranges,
+it uses the 206 Partial Content for the response. If the ranges are invalid, the
+server returns the 416 Range Not Satisfiable error. The server can also ignore the
+Range header and return the whole document with a 200 status code.
+
+Range: <unit>=<range-start>-
+Range: <unit>=<range-start>-<range-end>
+Range: <unit>=<range-start>-<range-end>, <range-start>-<range-end>
+Range: <unit>=<range-start>-<range-end>, <range-start>-<range-end>, <range-start>-<range-end>
+
+     */
+    public static final String HTTP_RANGE = "Range";
+
+
     private static final SimpleDateFormat mGMTFormat = new SimpleDateFormat("E, d MMM yyyy HH:mm:ss 'GMT'", Locale.US);
+
 
     private static void dumpParameters(IHTTPSession session) {
         Map<String, List<String>> parameters = session.getParameters();
@@ -78,7 +102,31 @@ class ServerUtils {
         }
     }
 
-    private static void dumpReuqest(IHTTPSession session) {
+    public static long[] parseRange(Map<String, String> headers) {
+        String value = headers.get("range");
+        long[] values = new long[2];
+        if (value == null) {
+            return values;
+        }
+
+
+        int index = value.indexOf("bytes=");
+        if (index == -1) return values;
+        value = value.substring(index + 6);
+        index = value.lastIndexOf('-');
+        if (index != -1) {
+            values[0] = Long.parseLong(value.substring(0, index));
+        } else {
+            values[0] = Long.parseLong(value.substring(0, index));
+            values[1] = Long.parseLong(value.substring(index + 1));
+
+        }
+
+
+        return values;
+    }
+
+    public static void dumpReuqest(IHTTPSession session) {
         Map<String, String> header = session.getHeaders();
         Map<String, String> parms = session.getParms();
         String uri = session.getUri();
@@ -99,8 +147,16 @@ class ServerUtils {
 
     }
 
-    public static String getEtag(File file) {
-        return Integer.toHexString((file.getAbsolutePath() + file.lastModified() + "" + file.length()).hashCode());
+    public static String generateETag(File file) {
+
+        long lastModFileTime = file.lastModified();
+        long nowFileTime = new Date().getTime();
+
+        String hexFileTime = Long.toHexString(lastModFileTime);
+        if ((nowFileTime - lastModFileTime) <= 30000000) {
+            return "W/\"" + hexFileTime + "\"";
+        }
+        return "\"" + hexFileTime + "\"";
     }
 
     public static String getGMTDateTime(int seconds) {

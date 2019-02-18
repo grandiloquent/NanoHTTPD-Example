@@ -205,7 +205,7 @@ public class Response implements Closeable {
             outputStream.flush();
             NanoHTTPD.safeClose(this.data);
         } catch (IOException ioe) {
-            NanoHTTPD.LOG.log(Level.SEVERE, "Could not send response to the client", ioe);
+            //NanoHTTPD.LOG.log(Level.SEVERE, "Could not send response to the client", ioe);
         }
     }
     @SuppressWarnings("static-method")

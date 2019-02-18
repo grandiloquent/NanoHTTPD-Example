@@ -104,7 +104,7 @@ public class WebServer extends NanoHTTPD {
 
     }
 
-    private Response handleQueryFile(Map<String, List<String>> parameters) {
+    private Response handleQueryFile(Map<String, List<String>> parameters, Map<String, String> headers) {
 
         try {
             String path = URLDecoder.decode(ServerUtils.getStringFromMap(parameters, "p", null), UTF8);
@@ -116,7 +116,8 @@ public class WebServer extends NanoHTTPD {
                 String ext = FileUtils.getExtension(file.getName());
                 switch (ext) {
                     case "mp4":
-                        return handleVideo(file);
+
+                        return handleVideo(file, headers);
                 }
             }
             return getNotFoundResponse();
@@ -144,19 +145,52 @@ public class WebServer extends NanoHTTPD {
         }
     }
 
-    private Response handleVideo(File file) {
+    private Response handleVideo(File file, Map<String, String> headers) {
 
         try {
-            FileInputStream is = new FileInputStream(file);
 
-            Response response = Response.newFixedLengthResponse(Status.OK,
-                    ServerUtils.getMimeType(file.getName(), "*/*"), is, file.length());
+            long[] values = ServerUtils.parseRange(headers);
+            long start = values[0];
+            long end = values[1];
+            if (end <= 0) {
+                end = file.length() - 1;
+            }
+            long newLen = end - start + 1;
+            FileInputStream is = new FileInputStream(file);
+            Response response;
+            if (start > 0) {
+                is.skip(start);
+
+
+                response = Response.newFixedLengthResponse(Status.PARTIAL_CONTENT,
+                        ServerUtils.getMimeType(file.getName(), "*/*"), is, newLen);
+
+
+            } else {
+
+                response = Response.newFixedLengthResponse(Status.OK,
+                        ServerUtils.getMimeType(file.getName(), "*/*"), is, newLen);
+
+            }
+            response.addHeader(ServerUtils.HTTP_CONTENT_RANGE, "bytes "
+                    + start
+                    + "-"
+                    + end
+                    + "/"
+                    + file.length());
+            response.addHeader(ServerUtils.HTTP_CONTENT_LENGTH, Long.toString(newLen));
             response.addHeader(ServerUtils.HTTP_ACCEPT_RANGES, "bytes");
-            response.addHeader(ServerUtils.HTTP_CONTENT_RANGE, "bytes 0-" + (file.length() - 1) + "/" + file.length());
-            response.addHeader(ServerUtils.HTTP_ETAG, ServerUtils.getEtag(file));
+            response.addHeader(ServerUtils.HTTP_ETAG, ServerUtils.generateETag(file));
             response.addHeader(ServerUtils.HTTP_LAST_MODIFIED, ServerUtils.getGMTDateTime(file.lastModified()));
-            response.addHeader(ServerUtils.HTTP_X_POWERED_BY,"Java/NanoHTTPD");
-            response.addHeader(ServerUtils.HTTP_SERVER,"NanoHTTPD");
+
+
+//            Log.e("TAG/WebServer", "handleVideo: "
+//                    + "\n start = " + start
+//                    + "\n end = " + end
+//                    + "\n newLen = " + newLen
+//                    + "\n fileLenght = " + file.length());
+
+
             return response;
         } catch (Exception e) {
             return getInternalErrorResponse(e.getMessage());
@@ -170,31 +204,35 @@ public class WebServer extends NanoHTTPD {
 
     // 主要方法
     private Response respond(IHTTPSession input) {
+
+        Response response = null;
         String uri = input.getUri();
         Map<String, List<String>> parameters = null;
 
-        System.out.println("URI = " + uri);
         if (uri.equals("/")) {
             //return serveFile("/index.html");
-            return handleIndex();
+            response = handleIndex();
         } else if (uri.indexOf('.') != -1) {
 
-            Response response = handleStaticFile(uri);
-            if (response != null) {
-                return response;
-            }
+            response = handleStaticFile(uri);
+
         } else {
 
-            if (parameters == null) ;
+
             parameters = input.getParameters();
             if (parameters.containsKey("p")) {
-                Response response = handleQueryFile(parameters);
-                if (response != null) return response;
+
+
+                response = handleQueryFile(parameters, input.getHeaders());
+
             }
 
         }
-        return getNotFoundResponse();
-
+        if (response == null)
+            response = getNotFoundResponse();
+        response.addHeader(ServerUtils.HTTP_X_POWERED_BY, "Java/NanoHTTPD");
+        response.addHeader(ServerUtils.HTTP_SERVER, "NanoHTTPD");
+        return response;
     }
 
     public void setStaticDirectory(File staticDirectory) {
