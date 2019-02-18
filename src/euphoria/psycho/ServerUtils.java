@@ -194,7 +194,7 @@ class ServerUtils {
 
     public static String getMimeType(String name, String defType) {
         String ext = FileUtils.getExtension(name);
-        if (ext != null) return MimeUtils.guessExtensionFromMimeType(ext);
+        if (ext != null) return MimeUtils.guessMimeTypeFromExtension(ext);
         return defType;
     }
 

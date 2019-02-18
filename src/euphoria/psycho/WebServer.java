@@ -35,6 +35,29 @@ public class WebServer extends NanoHTTPD {
         initialize();
     }
 
+    private Response generateDirectoryPage(File dir, int sortBy) {
+
+        File[] children = dir.listFiles();
+        sortFiles(children, sortBy, true);
+        byte[][] indexBytes = DataProvider.getIndex();
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        try {
+            os.write(indexBytes[0]);
+            os.write(StringUtils.escapeHTML(dir.getAbsolutePath()).getBytes(UTF8));
+            os.write(indexBytes[1]);
+            os.write(generateFileInfos(children));
+            os.write(indexBytes[2]);
+            os.write(Integer.toString(children.length).getBytes(UTF8));
+            os.write(indexBytes[3]);
+
+        } catch (IOException e) {
+            return getInternalErrorResponse(e.getMessage());
+        }
+        return Response.newFixedLengthResponse(Status.OK,
+                MimeUtils.guessMimeTypeFromExtension("html"),
+                os.toByteArray());
+    }
+
     private byte[] generateFileInfos(File[] files) {
 
         byte[][] bytes = DataProvider.getFileList();
@@ -103,62 +126,6 @@ public class WebServer extends NanoHTTPD {
 
     }
 
-    private void initialize() {
-        setHTTPHandler(this::respond);
-    }
-
-    private Response generateDirectoryPage(File dir, int sortBy) {
-
-        File[] children = dir.listFiles();
-        sortFiles(children, sortBy, true);
-        byte[][] indexBytes = DataProvider.getIndex();
-        ByteArrayOutputStream os = new ByteArrayOutputStream();
-        try {
-            os.write(indexBytes[0]);
-            os.write(StringUtils.escapeHTML(dir.getAbsolutePath()).getBytes(UTF8));
-            os.write(indexBytes[1]);
-            os.write(generateFileInfos(children));
-            os.write(indexBytes[2]);
-            os.write(Integer.toString(children.length).getBytes(UTF8));
-            os.write(indexBytes[3]);
-
-        } catch (IOException e) {
-            return getInternalErrorResponse(e.getMessage());
-        }
-        return Response.newFixedLengthResponse(Status.OK,
-                MimeUtils.guessMimeTypeFromExtension("html"),
-                os.toByteArray());
-    }
-
-    // 主要方法
-    private Response respond(IHTTPSession input) {
-        String uri = input.getUri();
-        Map<String, List<String>> parameters = null;
-
-        System.out.println("URI = " + uri);
-        if (uri.equals("/")) {
-            //return serveFile("/index.html");
-            return handleIndex();
-        } else if (uri.indexOf('.') != -1) {
-
-            Response response = handleStaticFile(uri);
-            if (response != null) {
-                return response;
-            }
-        } else {
-
-            if (parameters == null) ;
-            parameters = input.getParameters();
-            if (parameters.containsKey("p")) {
-                Response response = handleQueryFile(parameters);
-                if (response != null) return response;
-            }
-
-        }
-        return getNotFoundResponse();
-
-    }
-
     private Response handleStaticFile(String uri) {
         int dotIndex = uri.lastIndexOf('.');
         if (dotIndex == -1) return null;
@@ -191,6 +158,39 @@ public class WebServer extends NanoHTTPD {
         } catch (Exception e) {
             return getInternalErrorResponse(e.getMessage());
         }
+
+    }
+
+    private void initialize() {
+        setHTTPHandler(this::respond);
+    }
+
+    // 主要方法
+    private Response respond(IHTTPSession input) {
+        String uri = input.getUri();
+        Map<String, List<String>> parameters = null;
+
+        System.out.println("URI = " + uri);
+        if (uri.equals("/")) {
+            //return serveFile("/index.html");
+            return handleIndex();
+        } else if (uri.indexOf('.') != -1) {
+
+            Response response = handleStaticFile(uri);
+            if (response != null) {
+                return response;
+            }
+        } else {
+
+            if (parameters == null) ;
+            parameters = input.getParameters();
+            if (parameters.containsKey("p")) {
+                Response response = handleQueryFile(parameters);
+                if (response != null) return response;
+            }
+
+        }
+        return getNotFoundResponse();
 
     }
 
