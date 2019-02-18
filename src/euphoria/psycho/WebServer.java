@@ -154,6 +154,9 @@ public class WebServer extends NanoHTTPD {
             response.addHeader(ServerUtils.HTTP_ACCEPT_RANGES, "bytes");
             response.addHeader(ServerUtils.HTTP_CONTENT_RANGE, "bytes 0-" + (file.length() - 1) + "/" + file.length());
             response.addHeader(ServerUtils.HTTP_ETAG, ServerUtils.getEtag(file));
+            response.addHeader(ServerUtils.HTTP_LAST_MODIFIED, ServerUtils.getGMTDateTime(file.lastModified()));
+            response.addHeader(ServerUtils.HTTP_X_POWERED_BY,"Java/NanoHTTPD");
+            response.addHeader(ServerUtils.HTTP_SERVER,"NanoHTTPD");
             return response;
         } catch (Exception e) {
             return getInternalErrorResponse(e.getMessage());

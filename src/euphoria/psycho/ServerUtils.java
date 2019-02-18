@@ -56,11 +56,14 @@ class ServerUtils {
     public static final String HTTP_CACHE_CONTROL = "Cache-Control";
     public static final String HTTP_CONNECTION = "Connection";
     public static final String HTTP_CONTENT_LENGTH = "Content-Length";
+    public static final String HTTP_CONTENT_LOCATION = "Content-Location";
+    public static final String HTTP_CONTENT_RANGE = "Content-Range";
     public static final String HTTP_CONTENT_TYPE = "Content-Type";
     public static final String HTTP_ETAG = "ETag";
     public static final String HTTP_EXPIRES = "Expires";
-    public static final String HTTP_CONTENT_RANGE = "Content-Range";
-
+    public static final String HTTP_LAST_MODIFIED = "Last-Modified";
+    public static final String HTTP_SERVER = "Server";
+    public static final String HTTP_X_POWERED_BY = "X-Powered-By";
     private static final SimpleDateFormat mGMTFormat = new SimpleDateFormat("E, d MMM yyyy HH:mm:ss 'GMT'", Locale.US);
 
     private static void dumpParameters(IHTTPSession session) {
@@ -102,6 +105,11 @@ class ServerUtils {
 
     public static String getGMTDateTime(int seconds) {
         long millis = new Date().getTime() + (seconds * 1000);
+
+        return mGMTFormat.format(millis);
+    }
+
+    public static String getGMTDateTime(long millis) {
 
         return mGMTFormat.format(millis);
     }
