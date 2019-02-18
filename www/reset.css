@@ -1,0 +1,115 @@
+::-webkit-scrollbar-thumb {
+    border: solid transparent;
+    border-width: 1px 0;
+    background-clip: padding-box;
+    background: #d8dce5;
+}
+
+::-webkit-scrollbar-button {
+    width: 0;
+    height: 0;
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+    height: 10px;
+    overflow: visible;
+}
+
+html {
+    overflow-x: hidden;
+    font-family: -apple-system, BlinkSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Helevetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei UI", "Microsoft YaHei", "Source Han Sans CN", sans-serif;
+}
+
+blockquote,
+body,
+code,
+dd,
+div,
+dl,
+dt,
+fieldset,
+figure,
+form,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+input,
+legend,
+li,
+ol,
+p,
+pre,
+td,
+textarea,
+th,
+ul {
+    margin: 0;
+    padding: 0;
+    outline: 0;
+}
+
+body,
+html {
+    height: 100%;
+    overflow: hidden;
+}
+
+body,
+button,
+input,
+select,
+textarea {
+    font: 14px/1.5 -apple-system, BlinkSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Helevetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei UI", "Microsoft YaHei", "Source Han Sans CN", sans-serif;
+    -webkit-font-smoothing: subpixel-antialiased;
+    color: #000;
+    outline: 0;
+}
+
+ol,
+ul {
+    list-style: none;
+}
+
+a {
+    text-decoration: none;
+    color: #020202;
+    outline: 0;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.modal a,
+a:hover {
+    text-decoration: none;
+}
+
+address,
+b,
+caption,
+cite,
+code,
+dfn,
+em,
+i,
+strong,
+th,
+var {
+    font-style: normal;
+    font-weight: 400;
+}
+
+.clearfix:after {
+    content: "";
+    display: block;
+    clear: both;
+}
+
+.clearfix:after {
+    *zoom: 1;
+}
