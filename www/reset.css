@@ -1,4 +1,3 @@
-
 ::-webkit-scrollbar-thumb {
     border: solid transparent;
     border-width: 1px 0;
@@ -20,9 +19,11 @@
 
 html {
     overflow-x: hidden;
-    font-family: -apple-system,BlinkSystemFont,"Segoe UI",Roboto,Ubuntu,"Helvetica Neue",Helevetica,Arial,"PingFang SC","Hiragino Sans GB","Microsoft YaHei UI","Microsoft YaHei","Source Han Sans CN",sans-serif;
+    font-family: -apple-system, BlinkSystemFont, "Segoe UI", Roboto, Ubuntu, "Helvetica Neue", Helevetica, Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei UI", "Microsoft YaHei", "Source Han Sans CN", sans-serif;
 }
-body, html {
+
+body,
+html {
     height: 100%;
     overflow: hidden;
 }
@@ -58,6 +59,14 @@ ul {
     outline: 0;
 }
 
+button,
+input,
+select,
+textarea {
+    font-family: inherit;
+    font-size: inherit;
+    font-weight: inherit;
+}
 
 body,
 button,
@@ -113,4 +122,167 @@ var {
 
 .clearfix:after {
     *zoom: 1;
+}
+
+.btn-icon {
+    border: none;
+    outline: 0;
+    background: 0 0;
+    padding: 0;
+    color: transparent;
+    font-size: 0;
+}
+
+.icon-pop-close {
+    width: 30px;
+    height: 30px;
+    background-image: url(/svg/icon-pop-close.svg);
+}
+
+.modal-dialog .icon-pop-close {
+    position: relative;
+    z-index: 0;
+    width: 30px;
+    height: 30px;
+    background-image: url(/svg/icon-pop-close.svg);
+    background-color: transparent;
+    border-radius: 30px;
+}
+.modal-dialog .icon-pop-close:hover {
+    background-color: #f5f8fa;
+}
+.modal-dialog .btn-icon {
+    border: none;
+    outline: 0;
+    font-size: 0;
+    color: transparent;
+    cursor: pointer;
+}
+
+.modal-dialog-hd .icon-pop-close {
+    position: absolute;
+    top: 50%;
+    right: 13px;
+    margin-top: -15px;
+}
+
+.modal-dialog-pop .modal-info {
+    text-align: center;
+    margin: -5px 0 0;
+}
+.modal-dialog-pop .modal-info .info-tit-pic {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+    width: 40px;
+    height: 40px;
+    overflow: hidden;
+}
+
+
+.icon-nor-m {
+    background-image: url(/svg/doctype/icon-nor-m.svg);
+}
+
+
+.modal-dialog-pop .modal-info .info-tit-con span {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.modal-dialog-pop .modal-info .info-tit-con .tit {
+    display: inline-block;
+    max-width: 12em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+    height: 40px;
+    line-height: 40px;
+    padding: 0 0 0 2px;
+}
+
+
+.modal-dialog-pop .modal-info .info-tit-con .txt {
+    display: inline-block;
+    vertical-align: middle;
+    color: #777;
+    font-size: 12px;
+    margin: 0 0 0 12px;
+}
+.modal-dialog-pop .modal-info .info-tit-con {
+    display: inline-block;
+    vertical-align: middle;
+    height: 40px;
+    line-height: 40px;
+}
+.modal-dialog-pop .modal-info .info-desc {
+    color: #777;
+    margin: 19px 0 22px;
+}
+
+.modal-dialog-ft.btn-group {
+    padding-bottom: 20px;
+}
+
+.modal-dialog-pop .modal-dialog-ft {
+    text-align: center;
+}
+
+.modal-dialog-pop .modal-dialog-ft.btn-group {
+    padding: 0 0 45px 0;
+}
+
+.btn {
+    display: inline-block;
+    text-align: center;
+    cursor: pointer;
+    outline: 0;
+    border: none;
+    padding: 0;
+    background-color: transparent;
+    position: relative;
+    box-sizing: border-box;
+    border-radius: 2px;
+}
+
+.modal-dialog .btn {
+    outline: 0;
+    border: 1px solid #d2d8dc;
+    background-color: #fff;
+    box-sizing: border-box;
+    border-radius: 2px;
+    text-align: center;
+    color: #000;
+}
+
+.modal-dialog .btn-active {
+    background-color: #2e80ff;
+    border-color: #2e80ff;
+    color: #fff;
+}
+
+.modal-dialog-ft .btn {
+    float: right;
+    min-width: 90px;
+    padding: 0 10px;
+    box-sizing: border-box;
+    height: 36px;
+    line-height: 34px;
+    margin-right: 10px;
+    font-size: 14px;
+}
+
+.modal-dialog-ft .btn-active {
+    margin-left: 10px;
+}
+.modal-dialog .btn-active:hover {
+    background-color: #2977ea;
+}
+.modal-dialog-ft .btn:first-of-type {
+    margin-right: 20px;
+}
+
+.modal-dialog-pop .modal-dialog-ft .btn {
+    float: none;
 }
