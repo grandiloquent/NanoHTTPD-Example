@@ -11,6 +11,7 @@
         var fileInput = document.createElement("input");
         fileInput.style = 'position: absolute; left: -999px;';
         fileInput.setAttribute('type', 'file');
+        fileInput.setAttribute('multiple', true);
 
         dom.append(fileInput);
         this.fileInput = fileInput;
@@ -24,7 +25,11 @@
 
         if (fileList.length == 0) return;
         var formData = new FormData();
-        formData.append('file', fileList[0], fileList[0].name);
+        for (let i = 0; i < fileList.length; i++) {
+            formData.append('file', fileList[i], fileList[i].name);
+
+        }
+
         fetch("/upload", {
             method: 'POST',
             body: formData
