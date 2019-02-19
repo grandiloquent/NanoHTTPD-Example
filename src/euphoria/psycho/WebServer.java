@@ -210,8 +210,8 @@ public class WebServer extends NanoHTTPD {
         Map<String, List<String>> parameters = null;
 
         if (uri.equals("/")) {
-            //return serveFile("/index.html");
-            response = handleIndex();
+            response =  handleStaticFile("/index.html");
+            /// response = handleIndex();
         } else if (uri.indexOf('.') != -1) {
 
             response = handleStaticFile(uri);

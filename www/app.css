@@ -374,42 +374,5 @@
     background-image: url(/svg/act/icon-add.svg);
 }
 
-.mod-bubble-menu {
-    position: absolute;
-    z-index: 100;
-    top: 80px;
-    left: 500px;
-    box-sizing: border-box;
-    width: 260px;
-    background-color: #fff;
-    border-radius: 2px;
-    box-shadow: 0 1px 4px 0 rgba(15, 32, 65, .2);
-    padding: 6px 0;
-}
 
-.mod-bubble-dropdown,
-.mod-bubble-menu,
-.mod-upload .mod-bubble-dropdown,
-.mod-user .acct-bubble-dropdown {
-    -webkit-transform: translate3d(0, -10px, 0);
-    transform: translate3d(0, -10px, 0);
-}
 
-.mod-bubble-menu.with-border {
-    border: 1px solid #c8ccd3;
-}
-
-.mod-action-wrap .mod-bubble-menu.with-border {
-    left: auto;
-    right: 0;
-    top: 44px;
-    visibility: hidden;
-    opacity: 0;
-    max-height: 0;
-}
-
-.mod-action-wrap-create .mod-bubble-menu.with-border,
-.mod-action-wrap-upload .mod-bubble-menu.with-border {
-    left: 0;
-    right: auto;
-}
