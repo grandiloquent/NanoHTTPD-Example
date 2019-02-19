@@ -130,8 +130,21 @@ public class WebServer extends NanoHTTPD {
                 String ext = FileUtils.getExtension(file.getName());
                 switch (ext) {
                     case "mp4":
-
                         return handleVideo(file, headers);
+                    default:
+                        try {
+                            FileInputStream inputStream = new FileInputStream(file);
+                            Response response = Response.newFixedLengthResponse(Status.OK,
+                                    ServerUtils.getMimeType(file.getName(), "*/*"),
+                                    inputStream,
+                                    file.length());
+                            // For browser to generate a more suitable filename
+                            response.addHeader(ServerUtils.HTTP_CONTENT_DISPOSITION,
+                                    String.format("attachment; filename=\"%s\"", file.getName()));
+                            return response;
+                        } catch (Exception e) {
+                            return getInternalErrorResponse(e.getMessage());
+                        }
                 }
             }
             return getNotFoundResponse();
@@ -290,8 +303,8 @@ public class WebServer extends NanoHTTPD {
 
 
         if (uri.equals("/")) {
-            response = handleStaticFile("/index.html");
-            /// response = handleIndex();
+            /// response = handleStaticFile("/index.html");
+            response = handleIndex();
         } else if (uri.indexOf('.') != -1) {
 
             response = handleStaticFile(uri);
