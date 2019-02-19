@@ -7,7 +7,7 @@
 
     };
 
-    Upload.prototype.uploadFile = function () {
+    Upload.prototype.uploadFile = function (callback) {
         var fileInput = document.createElement("input");
         fileInput.style = 'position: absolute; left: -999px;';
         fileInput.setAttribute('type', 'file');
@@ -16,11 +16,11 @@
         this.fileInput = fileInput;
         this.fileInput.click();
         this.fileInput.addEventListener('change', function () {
-            uploadFile(this.files);
+            uploadFile(this.files, callback);
         })
     }
 
-    function uploadFile(fileList) {
+    function uploadFile(fileList, callback) {
 
         if (fileList.length == 0) return;
         var formData = new FormData();
@@ -32,15 +32,16 @@
             if (!response.ok) {
                 throw Error(response.statusText);
             } else {
-                return response.text();
+                return response.json();
             }
-        }).then(function (text) {
-            console.log(text);
-        }).catch(function () {
-            console.log(arguments);
+        }).then(function (json) {
+            if (callback)
+                callback(null, json);
+        }).catch(function (err) {
+            if (callback)
+                callback(err);
         });
 
-        console.log(fileList);
     }
     window['Upload'] = new Upload();
 })();
