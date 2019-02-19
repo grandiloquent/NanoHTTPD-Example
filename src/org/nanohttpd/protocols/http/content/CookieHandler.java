@@ -1,9 +1,11 @@
 package org.nanohttpd.protocols.http.content;
+
+import org.nanohttpd.protocols.http.response.Response;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import org.nanohttpd.protocols.http.response.Response;
 /**
  * Provides rudimentary support for cookies. Doesn't support 'path', 'secure'
  * nor 'httpOnly'. Feel free to improve it and/or add unsupported features. This

@@ -1,9 +1,12 @@
 package org.nanohttpd.protocols.http.sockets;
+
+import org.nanohttpd.util.IFactoryThrowing;
+
 import java.io.IOException;
 import java.net.ServerSocket;
+
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
-import org.nanohttpd.util.IFactoryThrowing;
 /**
  * Creates a new SSLServerSocket
  */

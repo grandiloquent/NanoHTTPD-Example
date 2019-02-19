@@ -1,9 +1,11 @@
 package org.nanohttpd.protocols.http.tempfiles;
+
+import org.nanohttpd.protocols.http.NanoHTTPD;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
-import org.nanohttpd.protocols.http.NanoHTTPD;
 /**
  * Default strategy for creating and cleaning up temporary files.
  * <p/>

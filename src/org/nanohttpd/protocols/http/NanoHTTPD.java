@@ -1,4 +1,17 @@
 package org.nanohttpd.protocols.http;
+
+import org.nanohttpd.protocols.http.response.Response;
+import org.nanohttpd.protocols.http.response.Status;
+import org.nanohttpd.protocols.http.sockets.DefaultServerSocketFactory;
+import org.nanohttpd.protocols.http.sockets.SecureServerSocketFactory;
+import org.nanohttpd.protocols.http.tempfiles.DefaultTempFileManagerFactory;
+import org.nanohttpd.protocols.http.tempfiles.ITempFileManager;
+import org.nanohttpd.protocols.http.threading.DefaultAsyncRunner;
+import org.nanohttpd.protocols.http.threading.IAsyncRunner;
+import org.nanohttpd.util.IFactory;
+import org.nanohttpd.util.IFactoryThrowing;
+import org.nanohttpd.util.IHandler;
+
 import java.io.Closeable;
 import java.io.IOException;
 import java.io.InputStream;
@@ -18,22 +31,12 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
+
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
-import org.nanohttpd.protocols.http.response.Response;
-import org.nanohttpd.protocols.http.response.Status;
-import org.nanohttpd.protocols.http.sockets.DefaultServerSocketFactory;
-import org.nanohttpd.protocols.http.sockets.SecureServerSocketFactory;
-import org.nanohttpd.protocols.http.tempfiles.DefaultTempFileManagerFactory;
-import org.nanohttpd.protocols.http.tempfiles.ITempFileManager;
-import org.nanohttpd.protocols.http.threading.DefaultAsyncRunner;
-import org.nanohttpd.protocols.http.threading.IAsyncRunner;
-import org.nanohttpd.util.IFactory;
-import org.nanohttpd.util.IFactoryThrowing;
-import org.nanohttpd.util.IHandler;
 /**
  * A simple, tiny, nicely embeddable HTTP server in Java
  * <p/>

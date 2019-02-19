@@ -2,16 +2,11 @@ package euphoria.psycho;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonElement;
-import com.google.gson.stream.JsonWriter;
 
 import org.apache.commons.fileupload.FileItem;
-import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
-import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.IOUtils;
 import org.nanohttpd.fileupload.NanoFileUpload;
 import org.nanohttpd.protocols.http.IHTTPSession;
 import org.nanohttpd.protocols.http.NanoHTTPD;
@@ -23,38 +18,33 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
 
 import static euphoria.psycho.FileUtils.sortFiles;
 
 public class WebServer extends NanoHTTPD {
 
-    public static final String UTF8 = "utf-8";
+    private static final String UTF8 = "utf-8";
     private File mStaticDirectory;
     private SimpleDateFormat mSimpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
     private File mUploadDirectory;
-    NanoFileUpload mNanoFileUpload;
+    private NanoFileUpload mNanoFileUpload;
 
     public WebServer(int port) {
         super(port);
         initialize();
     }
 
-    public WebServer(String hostname, int port) {
+    WebServer(String hostname, int port) {
         super(hostname, port);
         initialize();
     }
@@ -116,7 +106,7 @@ public class WebServer extends NanoHTTPD {
 
     }
 
-    public String getURL() {
+    String getURL() {
         return getHostname() + ":" + myPort;
     }
 
@@ -186,10 +176,9 @@ public class WebServer extends NanoHTTPD {
             StringWriter writer = new StringWriter();
 
 
-            Iterator<String> iterator = map.keySet().iterator();
-            while (iterator.hasNext()) {
+            for (String s : map.keySet()) {
 
-                List<FileItem> fileItems = map.get(iterator.next());
+                List<FileItem> fileItems = map.get(s);
                 for (FileItem fileItem : fileItems) {
                     DiskFileItem diskFileItem = (DiskFileItem) fileItem;
                     String disposition = fileItem.getHeaders().getHeader("content-disposition");
@@ -209,6 +198,7 @@ public class WebServer extends NanoHTTPD {
                                 results.put(dstFile.getName(), false);
                             }
                         } else {
+                            // 从临时文件复制到上传文件夹
                             boolean success = diskFileItem.getStoreLocation()
                                     .renameTo(dstFile);
 
@@ -327,11 +317,11 @@ public class WebServer extends NanoHTTPD {
         return response;
     }
 
-    public void setStaticDirectory(File staticDirectory) {
+    void setStaticDirectory(File staticDirectory) {
         mStaticDirectory = staticDirectory;
     }
 
-    public void setUploadDirectory(File uploadDirectory) {
+    void setUploadDirectory(File uploadDirectory) {
         mUploadDirectory = uploadDirectory;
     }
 

@@ -1,8 +1,10 @@
 package org.nanohttpd.protocols.http.threading;
+
+import org.nanohttpd.protocols.http.ClientHandler;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import org.nanohttpd.protocols.http.ClientHandler;
 /**
  * Default threading strategy for NanoHTTPD.
  * <p/>
