@@ -21,6 +21,7 @@ public class Main {
         Log.e("TAG/Main", "main: " + webServer.getURL());
 
         webServer.setStaticDirectory(new File("C:\\Users\\psycho\\IdeaProjects\\WebServer\\www"));
+        webServer.setUploadDirectory(new File("C:\\Users\\psycho\\IdeaProjects\\WebServer\\upload"));
 
         ServerRunner.executeInstance(webServer);
 

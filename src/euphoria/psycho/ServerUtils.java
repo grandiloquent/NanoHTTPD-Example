@@ -1,8 +1,13 @@
 package euphoria.psycho;
 
+import org.apache.commons.io.IOUtils;
 import org.nanohttpd.protocols.http.IHTTPSession;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.UnknownHostException;
@@ -86,6 +91,18 @@ Range: <unit>=<range-start>-<range-end>, <range-start>-<range-end>, <range-start
      */
     public static final String HTTP_RANGE = "Range";
     public static final String HTTP_CONTENT_DISPOSITION = "Content-Disposition";
+
+    public static void copyToFile(InputStream is, File dstFile) {
+
+
+        try (FileOutputStream os = new FileOutputStream(dstFile)) {
+            IOUtils.copy(is, os);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+    }
 
     public static String getFileNameFromContentDisposition(String value) {
         int index = value.indexOf("filename=\"");

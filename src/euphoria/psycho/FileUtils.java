@@ -7,6 +7,30 @@ import java.util.Locale;
 
 class FileUtils {
 
+    public static File getUniqueFile(File src) {
+        if (!src.isFile()) return src;
+        int dotIndex = src.getName().lastIndexOf('.');
+        String name = "";
+        String ext = "";
+        int count = 1;
+        if (dotIndex != -1) {
+            ext = src.getName().substring(dotIndex);
+            name = src.getName().substring(0, dotIndex);
+        } else {
+            name = src.getName();
+        }
+        File parentFile = src.getParentFile();
+        File dstFile = new File(parentFile, name + " (" + count + ")" + ext);
+        while (dstFile.isFile()) {
+            if (++count > 32) {
+                throw new IllegalStateException();
+            }
+            dstFile = new File(parentFile, name + " (" + count + ")" + ext);
+
+        }
+        return dstFile;
+    }
+
     public static String formatFileSize(long number) {
         float result = number;
         String suffix = "";

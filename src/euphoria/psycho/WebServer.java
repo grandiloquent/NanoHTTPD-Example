@@ -1,9 +1,17 @@
 package euphoria.psycho;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.stream.JsonWriter;
+
 import org.apache.commons.fileupload.FileItem;
 import org.apache.commons.fileupload.FileItemFactory;
 import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItem;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
 import org.nanohttpd.fileupload.NanoFileUpload;
 import org.nanohttpd.protocols.http.IHTTPSession;
 import org.nanohttpd.protocols.http.NanoHTTPD;
@@ -15,14 +23,21 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
 
 import static euphoria.psycho.FileUtils.sortFiles;
 
@@ -32,6 +47,7 @@ public class WebServer extends NanoHTTPD {
     private File mStaticDirectory;
     private SimpleDateFormat mSimpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
     private File mUploadDirectory;
+    NanoFileUpload mNanoFileUpload;
 
     public WebServer(int port) {
         super(port);
@@ -153,37 +169,63 @@ public class WebServer extends NanoHTTPD {
         }
     }
 
-    NanoFileUpload mNanoFileUpload;
-
-
     private Response handleUploadFile(IHTTPSession session) {
-        //if (!mUploadDirectory.isDirectory()) return getInternalErrorResponse("Not implements");
+        if (!mUploadDirectory.isDirectory()) return getInternalErrorResponse("Not implements");
         if (mNanoFileUpload == null) {
             mNanoFileUpload = new NanoFileUpload(new DiskFileItemFactory());
         }
         try {
             Map<String, List<FileItem>> map = mNanoFileUpload.parseParameterMap(session);
 
+
+            Map<String, Boolean> results = new HashMap<>();
+
+            Gson gson = new GsonBuilder().create();
+            StringWriter writer = new StringWriter();
+
+
             Iterator<String> iterator = map.keySet().iterator();
             while (iterator.hasNext()) {
 
-                FileItem fileItem = map.get(iterator.next()).get(0);
-                Iterator<String> headers = fileItem.getHeaders().getHeaderNames();
-                while (headers.hasNext()) {
-                    String value = fileItem.getHeaders().getHeader("content-disposition");
-                    headers.next();
-                    Log.e("TAG/WebServer", "handleUploadFile: " + ServerUtils.getFileNameFromContentDisposition(value));
+                List<FileItem> fileItems = map.get(iterator.next());
+                for (FileItem fileItem : fileItems) {
+                    DiskFileItem diskFileItem = (DiskFileItem) fileItem;
+                    String disposition = fileItem.getHeaders().getHeader("content-disposition");
+                    String fileName = ServerUtils.getFileNameFromContentDisposition(disposition);
 
+
+                    if (fileName != null) {
+                        File dstFile = new File(mUploadDirectory, fileName);
+                        dstFile = FileUtils.getUniqueFile(dstFile);
+                        if (diskFileItem.isInMemory()) {
+                            try (InputStream inputStream = diskFileItem.getInputStream()) {
+                                ServerUtils.copyToFile(inputStream, dstFile);
+                                results.put(dstFile.getName(), true);
+                            } catch (IOException e) {
+                                results.put(dstFile.getName(), false);
+                            }
+                        } else {
+                            boolean success = diskFileItem.getStoreLocation()
+                                    .renameTo(dstFile);
+
+                            results.put(dstFile.getName(), success);
+                        }
+                    } else {
+                        results.put(diskFileItem.getName(), false);
+                    }
                 }
-                Log.e("TAG/WebServer", "handleUploadFile: " + fileItem.getFieldName());
+
 
             }
+            gson.toJson(results, writer);
+
+            return Response.newFixedLengthResponse(Status.OK, ServerUtils.getMimeType(".json", "*/*"),
+                    writer.toString());
 
         } catch (FileUploadException e) {
-            e.printStackTrace();
+            return getInternalErrorResponse(e.getMessage());
         }
 
-        return getNotFoundResponse();
     }
 
     private Response handleVideo(File file, Map<String, String> headers) {
