@@ -171,6 +171,8 @@ public class WebServer extends NanoHTTPD {
 
     private Response handleUploadFile(IHTTPSession session) {
         if (!mUploadDirectory.isDirectory()) return getInternalErrorResponse("Not implements");
+
+        // Parse session
         if (mNanoFileUpload == null) {
             mNanoFileUpload = new NanoFileUpload(new DiskFileItemFactory());
         }
@@ -178,8 +180,8 @@ public class WebServer extends NanoHTTPD {
             Map<String, List<FileItem>> map = mNanoFileUpload.parseParameterMap(session);
 
 
+            // Respond JSON
             Map<String, Boolean> results = new HashMap<>();
-
             Gson gson = new GsonBuilder().create();
             StringWriter writer = new StringWriter();
 
@@ -197,6 +199,8 @@ public class WebServer extends NanoHTTPD {
                     if (fileName != null) {
                         File dstFile = new File(mUploadDirectory, fileName);
                         dstFile = FileUtils.getUniqueFile(dstFile);
+
+                        // when the file has been read into memory
                         if (diskFileItem.isInMemory()) {
                             try (InputStream inputStream = diskFileItem.getInputStream()) {
                                 ServerUtils.copyToFile(inputStream, dstFile);
@@ -217,6 +221,8 @@ public class WebServer extends NanoHTTPD {
 
 
             }
+
+            // Convert map to json string
             gson.toJson(results, writer);
 
             return Response.newFixedLengthResponse(Status.OK, ServerUtils.getMimeType(".json", "*/*"),
