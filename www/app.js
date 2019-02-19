@@ -12,6 +12,7 @@
 
   App.prototype.bindViews = function () {
     this.upload = document.getElementById('formFileInputCt');
+    this.uploadFile = document.getElementById('uploadFile');
   };
   App.prototype.initViews = function () {
     if (this.upload) {
@@ -19,6 +20,11 @@
       this.upload.addEventListener('click', function () {
         that.toggleUploadMenu();
       });
+    }
+    if (this.uploadFile) {
+      this.uploadFile.addEventListener('click', function () {
+        window.Upload.uploadFile();
+      })
     }
   };
   App.prototype.toggleUploadMenu =

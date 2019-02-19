@@ -85,7 +85,16 @@ Range: <unit>=<range-start>-<range-end>, <range-start>-<range-end>, <range-start
 
      */
     public static final String HTTP_RANGE = "Range";
+    public static final String HTTP_CONTENT_DISPOSITION = "Content-Disposition";
 
+    public static String getFileNameFromContentDisposition(String value) {
+        int index = value.indexOf("filename=\"");
+        if (index == -1) return null;
+        int length = "filename=\"".length();
+        return value.substring(index + length, value.length() - 1);
+
+
+    }
 
     private static final SimpleDateFormat mGMTFormat = new SimpleDateFormat("E, d MMM yyyy HH:mm:ss 'GMT'", Locale.US);
 

@@ -1,7 +1,13 @@
 package euphoria.psycho;
 
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.nanohttpd.fileupload.NanoFileUpload;
 import org.nanohttpd.protocols.http.IHTTPSession;
 import org.nanohttpd.protocols.http.NanoHTTPD;
+import org.nanohttpd.protocols.http.request.Method;
 import org.nanohttpd.protocols.http.response.Response;
 import org.nanohttpd.protocols.http.response.Status;
 
@@ -14,6 +20,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +31,7 @@ public class WebServer extends NanoHTTPD {
     public static final String UTF8 = "utf-8";
     private File mStaticDirectory;
     private SimpleDateFormat mSimpleDateFormat = new SimpleDateFormat("yyyy年MM月dd日 HH:mm");
+    private File mUploadDirectory;
 
     public WebServer(int port) {
         super(port);
@@ -145,6 +153,39 @@ public class WebServer extends NanoHTTPD {
         }
     }
 
+    NanoFileUpload mNanoFileUpload;
+
+
+    private Response handleUploadFile(IHTTPSession session) {
+        //if (!mUploadDirectory.isDirectory()) return getInternalErrorResponse("Not implements");
+        if (mNanoFileUpload == null) {
+            mNanoFileUpload = new NanoFileUpload(new DiskFileItemFactory());
+        }
+        try {
+            Map<String, List<FileItem>> map = mNanoFileUpload.parseParameterMap(session);
+
+            Iterator<String> iterator = map.keySet().iterator();
+            while (iterator.hasNext()) {
+
+                FileItem fileItem = map.get(iterator.next()).get(0);
+                Iterator<String> headers = fileItem.getHeaders().getHeaderNames();
+                while (headers.hasNext()) {
+                    String value = fileItem.getHeaders().getHeader("content-disposition");
+                    headers.next();
+                    Log.e("TAG/WebServer", "handleUploadFile: " + ServerUtils.getFileNameFromContentDisposition(value));
+
+                }
+                Log.e("TAG/WebServer", "handleUploadFile: " + fileItem.getFieldName());
+
+            }
+
+        } catch (FileUploadException e) {
+            e.printStackTrace();
+        }
+
+        return getNotFoundResponse();
+    }
+
     private Response handleVideo(File file, Map<String, String> headers) {
 
         try {
@@ -207,15 +248,18 @@ public class WebServer extends NanoHTTPD {
 
         Response response = null;
         String uri = input.getUri();
-        Map<String, List<String>> parameters = null;
+        Map<String, List<String>> parameters;
+
 
         if (uri.equals("/")) {
-            response =  handleStaticFile("/index.html");
+            response = handleStaticFile("/index.html");
             /// response = handleIndex();
         } else if (uri.indexOf('.') != -1) {
 
             response = handleStaticFile(uri);
 
+        } else if (input.getMethod() == Method.POST && uri.equals("/upload")) {
+            response = handleUploadFile(input);
         } else {
 
 
@@ -239,6 +283,9 @@ public class WebServer extends NanoHTTPD {
         mStaticDirectory = staticDirectory;
     }
 
+    public void setUploadDirectory(File uploadDirectory) {
+        mUploadDirectory = uploadDirectory;
+    }
 
     private static void addHeaderForFile(Response response, File file) {
         response.addHeader(ServerUtils.HTTP_ACCESS_CONTROL_ALLOW_ORIGIN, "*");
