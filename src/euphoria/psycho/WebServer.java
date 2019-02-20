@@ -303,8 +303,8 @@ public class WebServer extends NanoHTTPD {
 
 
         if (uri.equals("/")) {
-            /// response = handleStaticFile("/index.html");
-            response = handleIndex();
+             response = handleStaticFile("/index.html");
+            // response = handleIndex();
         } else if (uri.indexOf('.') != -1) {
 
             response = handleStaticFile(uri);
